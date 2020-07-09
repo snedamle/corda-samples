@@ -14,25 +14,32 @@ import java.util.List;
 @StartableByRPC
 public class QueryDatabaseEntityManagerFlow extends FlowLogic<String> {
 
-        @Suspendable
-        @Override
-        public String call() {
+    @Suspendable
+    @Override
+    public String call() {
 
-            String result = "Product Details : ";
+        String result = "Product Details : ";
 
-            List<ProductSchemaV1.PersistentProduct> list = getServiceHub().withEntityManager(entityManager -> {
+        //to create new products in product table
+        getServiceHub().withEntityManager(entityManager -> {
+            ProductSchemaV1.PersistentProduct ob = new ProductSchemaV1.PersistentProduct();
+            entityManager.persist(ob);
 
-                CriteriaQuery<ProductSchemaV1.PersistentProduct> query = entityManager.getCriteriaBuilder().createQuery(ProductSchemaV1.PersistentProduct.class);
-                Root<ProductSchemaV1.PersistentProduct> type = query.from(ProductSchemaV1.PersistentProduct.class);
-                query.select(type);
-                return entityManager.createQuery(query).getResultList();
+        });
 
-            });
+        //query the product table to get the records
+        List<ProductSchemaV1.PersistentProduct> list = getServiceHub().withEntityManager(entityManager -> {
+            CriteriaQuery<ProductSchemaV1.PersistentProduct> query = entityManager.getCriteriaBuilder().createQuery(ProductSchemaV1.PersistentProduct.class);
+            Root<ProductSchemaV1.PersistentProduct> type = query.from(ProductSchemaV1.PersistentProduct.class);
+            query.select(type);
+            return entityManager.createQuery(query).getResultList();
 
-            for(ProductSchemaV1.PersistentProduct product : list) {
-                result += product.toString() + "\n";
-            }
+        });
 
-            return result;
+        for(ProductSchemaV1.PersistentProduct product : list) {
+            result += product.toString() + "\n";
         }
+
+        return result;
+    }
 }

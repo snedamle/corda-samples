@@ -1,6 +1,5 @@
 package net.corda.database.examples.schema;
 
-import net.corda.core.contracts.UniqueIdentifier;
 import net.corda.core.schemas.MappedSchema;
 import net.corda.core.schemas.PersistentState;
 import net.corda.core.serialization.CordaSerializable;
@@ -9,11 +8,13 @@ import javax.persistence.*;
 import java.util.Arrays;
 import java.util.UUID;
 
+//schemas will be stored off ledger
 public class ProductSchemaV1 extends MappedSchema {
     public ProductSchemaV1() {
         super(ProductSchema.class, 1, Arrays.asList(PersistentProduct.class, PersistentProductDetail.class));
     }
 
+    // add the entity and table annotations
     @Entity
     @Table(name = "product")
     public static class PersistentProduct extends PersistentState {
@@ -24,6 +25,7 @@ public class ProductSchemaV1 extends MappedSchema {
         @Column(name = "property") private final String property;
         @Column(name = "owner") private final String owner;
 
+        // you could also use many to one, one to many joins
         @OneToOne(cascade = CascadeType.PERSIST)
         @JoinColumns({
                 @JoinColumn(name = "detail_id", referencedColumnName = "detail_id"),
@@ -40,6 +42,7 @@ public class ProductSchemaV1 extends MappedSchema {
             this.productDetail = productDetail;
         }
 
+        //Hibernate requires you to add a default constructor by default
         public PersistentProduct() {
             productDetail = null;
             id = null;

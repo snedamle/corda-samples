@@ -14,26 +14,40 @@ import java.sql.SQLException;
 @StartableByRPC
 public class QueryDatabaseJdbcFlow extends FlowLogic<String> {
 
-        @Suspendable
-        @Override
-        public String call() {
+    @Suspendable
+    @Override
+    public String call() {
 
-            String result = "Product Details : ";
 
-            try {
-                Connection connection = getServiceHub().jdbcSession();
-                PreparedStatement preparedStatement = connection.prepareStatement("SELECT sku, property FROM product");
-                ResultSet rs = preparedStatement.executeQuery();
-                while (rs.next()) {
-                    Integer sku = rs.getInt("sku");
-                    String property = rs.getString("property");
-                    result += "property : " + property + "sku : " + sku+ "name : "  + "\n";
-                }
+        String result = "Product Details : ";
 
-            } catch (SQLException e) {
-                e.printStackTrace();
+        //create
+        try {
+            String sku = "test1";
+            String name = "name1";
+            Connection connection = getServiceHub().jdbcSession();
+            PreparedStatement preparedStatement = connection.prepareStatement("insert into product values ( " + sku + " , " + name + " )");
+            int i = preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        //retrieve
+        try {
+            Connection connection = getServiceHub().jdbcSession();
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT sku, property FROM product");
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                Integer sku = rs.getInt("sku");
+                String property = rs.getString("property");
+                result += "property : " + property + "sku : " + sku+ "name : "  + "\n";
             }
 
-            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+
+        return result;
+    }
 }
