@@ -1,12 +1,10 @@
 package net.corda.database.examples.schema;
 
 import net.corda.core.schemas.MappedSchema;
-import net.corda.core.schemas.PersistentState;
 import net.corda.core.serialization.CordaSerializable;
 
 import javax.persistence.*;
 import java.util.Arrays;
-import java.util.UUID;
 
 //schemas will be stored off ledger
 public class ProductSchemaV1 extends MappedSchema {
@@ -17,13 +15,9 @@ public class ProductSchemaV1 extends MappedSchema {
     // add the entity and table annotations
     @Entity
     @Table(name = "product")
-    public static class PersistentProduct extends PersistentState {
-        @Column(name = "id") private final UUID id;
-        @Column(name = "sku") private final Integer sku;
+    public static class PersistentProduct {
+        @Id @Column(name = "sku") private final Integer sku;
         @Column(name = "name") private final String name;
-        @Column(name = "issuer") private final String issuer;
-        @Column(name = "property") private final String property;
-        @Column(name = "owner") private final String owner;
 
         // you could also use many to one, one to many joins
         @OneToOne(cascade = CascadeType.PERSIST)
@@ -32,29 +26,17 @@ public class ProductSchemaV1 extends MappedSchema {
         })
         private final PersistentProductDetail productDetail;
 
-        public PersistentProduct(UUID id, Integer sku, String name, String issuer, String property, String owner, PersistentProductDetail productDetail) {
-            this.id = id;
+        public PersistentProduct(Integer sku, String name, PersistentProductDetail productDetail) {
             this.sku = sku;
             this.name = name;
-            this.issuer = issuer;
-            this.property = property;
-            this.owner = owner;
             this.productDetail = productDetail;
         }
 
         //Hibernate requires you to add a default constructor by default
         public PersistentProduct() {
             productDetail = null;
-            id = null;
             sku = null;
             name = null;
-            issuer = null;
-            property = null;
-            owner = null;
-        }
-
-        public UUID getId() {
-            return id;
         }
 
         public Integer getSku() {
@@ -65,25 +47,13 @@ public class ProductSchemaV1 extends MappedSchema {
             return name;
         }
 
-        public String getProperty() {
-            return property;
-        }
-
-        public String getOwner() {
-            return owner;
-        }
-
         public PersistentProductDetail getProductDetail() {
             return productDetail;
         }
 
-        public String getIssuer() {
-            return issuer;
-        }
-
         @Override
         public String toString() {
-            return "Id : " + id + "sku : " + sku+ "name : " + name+ "issuer : " + issuer+ "property : " + property+ "owner : " + owner;
+            return " sku : " + sku+ " name : " + name + " detail_id : " + productDetail.getDetail_id() + " product_detail : " + productDetail.getDetail();
         }
     }
 

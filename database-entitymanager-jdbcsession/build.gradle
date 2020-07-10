@@ -111,6 +111,8 @@ task deployNodesJava(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
             adminAddress("localhost:10046")
         }
         rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
+        extraConfig = ['h2Settings.address' : 'localhost:20041']
+
     }
     node {
         name "O=PartyB,L=New York,C=US"
