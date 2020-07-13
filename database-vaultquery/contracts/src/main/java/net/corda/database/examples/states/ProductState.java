@@ -41,7 +41,6 @@ public class ProductState implements ContractState, QueryableState {
         return name;
     }
 
-
     public Party getIssuer() {
         return issuer;
     }
@@ -64,7 +63,7 @@ public class ProductState implements ContractState, QueryableState {
     }
 
     @Override public List<AbstractParty> getParticipants() {
-        return Arrays.asList(owner);
+        return Arrays.asList(owner, issuer);
     }
 
     @Override public PersistentState generateMappedObject(MappedSchema schema) {

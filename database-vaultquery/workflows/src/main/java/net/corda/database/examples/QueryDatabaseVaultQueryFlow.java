@@ -11,6 +11,9 @@ import net.corda.database.examples.states.ProductState;
 
 import java.util.Arrays;
 
+/**
+ * This flow is used to query the Product state data from the ledger
+ */
 @InitiatingFlow
 @StartableByRPC
 public class QueryDatabaseVaultQueryFlow extends FlowLogic<String> {
@@ -19,11 +22,12 @@ public class QueryDatabaseVaultQueryFlow extends FlowLogic<String> {
         @Override
         public String call() {
 
+            //create the queryCriteria, by passing in the required params. Unconsumed parameter will give you all the states which are not consumed till now
+            //and are available for consumption
             QueryCriteria queryCriteria = new QueryCriteria.VaultQueryCriteria(Vault.StateStatus.UNCONSUMED);
 
-            StateAndRef<ProductState> stateAndRef = getServiceHub().getVaultService().queryBy(ProductState.class,queryCriteria).getStates().get(0);
-
-            ProductState productState = stateAndRef.getState().getData();
+            //use vaultservice to get one of the product state by specifying the query criteria
+            ProductState productState = getServiceHub().getVaultService().queryBy(ProductState.class,queryCriteria).getStates().get(0).getState().getData();
 
             return productState.toString();
         }
