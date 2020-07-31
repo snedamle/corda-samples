@@ -18,7 +18,7 @@ import java.util.Arrays;
  * 4. self sign the transaction
  * 5. call finality flow to notarize and save the state in the vault.
  */
-public class ExampleFlow {
+public class IssueProductStateFlow {
     @InitiatingFlow
     @StartableByRPC
     public static class Initiator extends FlowLogic<SignedTransaction> {
