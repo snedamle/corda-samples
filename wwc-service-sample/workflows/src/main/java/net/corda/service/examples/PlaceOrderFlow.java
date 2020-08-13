@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
+//This flow is used to place an order by the customer.
 public class PlaceOrderFlow {
 
     @InitiatingFlow
@@ -34,6 +35,7 @@ public class PlaceOrderFlow {
         public SignedTransaction call() throws FlowException {
             Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);
 
+            //create the order
             OrderState output = new OrderState(getOurIdentity(), retailer, shipper, product_id, product_details);
 
             TransactionBuilder txBuilder = new TransactionBuilder(notary);
@@ -43,6 +45,7 @@ public class PlaceOrderFlow {
 
             txBuilder.verify(getServiceHub());
 
+            //initiate sessions with retailer and shipper
             FlowSession session = initiateFlow(retailer);
             FlowSession session1 = initiateFlow(shipper);
             SignedTransaction ptx = getServiceHub().signInitialTransaction(txBuilder);

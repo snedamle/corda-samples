@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.List;
 
+//This flow is triggered automatically by ShipOrderService once an order is placed by the customer.
 public class ShipOrderFlow {
 
     @InitiatingFlow
@@ -25,8 +26,11 @@ public class ShipOrderFlow {
         public SignedTransaction call() throws FlowException {
             Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);
 
+            //get the latest order state
             List<StateAndRef<OrderState>> wBStateList = getServiceHub().getVaultService().queryBy(OrderState.class).getStates();
             OrderState vaultState = wBStateList.get(wBStateList.size() - 1).getState().getData();
+
+            //create a shipment state for shipping the order to customer
             ShipmentState output = new ShipmentState(vaultState.getCustomer(), getOurIdentity(),
                     vaultState.getRetailer(), vaultState.getProduct_id(), vaultState.getProduct_details());
 
@@ -36,6 +40,7 @@ public class ShipOrderFlow {
             txBuilder.addOutputState(output);
             txBuilder.verify(getServiceHub());
 
+            //initiate sessions with retailer and customer
             FlowSession session = initiateFlow(vaultState.getRetailer());
             FlowSession session1 = initiateFlow(vaultState.getCustomer());
 
